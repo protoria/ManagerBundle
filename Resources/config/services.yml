@@ -1,0 +1,18 @@
+services:
+    igdr_manager.manager.abstract:
+        abstract:  true
+        calls:
+            - [setEm, [@doctrine.orm.entity_manager]]
+            - [setCacheProvider, [@doctrine_cache.providers.igdr_cache]]
+
+    #factory
+    igdr_manager.manager.factory:
+        class:  'Igdr\Bundle\ManagerBundle\Manager\ManagerFactory'
+        calls:
+            - [setContainer, [@service_container]]
+
+    #standard manager
+    igdr_manager.manager.standard:
+        class:     'Igdr\Bundle\ManagerBundle\Manager\StandardManager'
+        abstract:  true
+        parent:    igdr_base.manager.abstract
