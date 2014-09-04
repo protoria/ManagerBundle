@@ -1,4 +1,4 @@
-Igdr Project Office core
+Manager Bundle
 ========================
 Installation
 ------------
@@ -8,11 +8,11 @@ Add the bundle to your `composer.json`:
     "repositories": [
         {
             "type": "git",
-            "url": "git@gitlab.ciklum.net:po-ciklum/core.git"
+            "url": "git@github.com:igdr/ManagerBundle.git"
         }
     ],
 
-    "ciklum/core-bundle" : "dev-master"
+    "igdr/manager-bundle" : "dev-master"
 
 and run:
 
