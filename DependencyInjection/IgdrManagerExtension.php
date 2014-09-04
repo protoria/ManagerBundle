@@ -1,5 +1,5 @@
 <?php
-namespace Igdr\Bundle\CoreBundle\DependencyInjection;
+namespace Igdr\Bundle\ManagerBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -7,9 +7,9 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
- * Class IgdrCoreExtension
+ * Class IgdrManagerExtension
  */
-class IgdrCoreExtension extends Extension
+class IgdrManagerExtension extends Extension
 {
     /**
      * {@inheritDoc}

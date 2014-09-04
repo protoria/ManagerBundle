@@ -1,12 +1,12 @@
 <?php
-namespace Igdr\Bundle\CoreBundle;
+namespace Igdr\Bundle\ManagerBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class IgdrCoreBundle
+ * Class IgdrManagerBundle
  */
-class IgdrCoreBundle extends Bundle
+class IgdrManagerBundle extends Bundle
 {
 
 }
