@@ -269,7 +269,7 @@ abstract class AbstractManager
         $query = clone $this->getQuery();
 
         /* @var $query Query */
-        if (strpos($field, 'e.') === false) {
+        if (strpos($field, '.') === false) {
             $query = $query->select('DISTINCT e.' . $field)->getQuery();
         } else {
             $query = $query->select($field)->getQuery();
