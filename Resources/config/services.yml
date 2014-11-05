@@ -4,6 +4,7 @@ services:
         calls:
             - [setEm, [@doctrine.orm.entity_manager]]
             - [setCacheProvider, [@doctrine_cache.providers.app_cache]]
+            - [setEventDispatcher, [@event_dispatcher]]
 
     #factory
     igdr_manager.manager.factory:
