@@ -5,7 +5,7 @@ Installation
 
 Add the bundle to your `composer.json`:
 
-    "igdr/manager-bundle" : "1.1"
+    "igdr/manager-bundle" : "dev-master"
 
 and run:
 
