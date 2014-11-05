@@ -19,6 +19,12 @@ class IgdrManagerExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
 
+        //load configuration
+        $configuration = $this->getConfiguration($configs, $container);
+        $config        = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter('igdr_manager.config.cache_provider', isset($config['cache_provider']) ? $config['cache_provider'] : null);
+
         return $configs;
     }
 

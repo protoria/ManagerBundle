@@ -5,13 +5,6 @@ Installation
 
 Add the bundle to your `composer.json`:
 
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:igdr/ManagerBundle.git"
-        }
-    ],
-
     "igdr/manager-bundle" : "dev-master"
 
 and run:

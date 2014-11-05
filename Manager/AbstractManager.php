@@ -6,12 +6,20 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Igdr\Bundle\ManagerBundle\Event\ManagerEvent;
+use Igdr\Bundle\ManagerBundle\IgdrManagerEvents;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class AbstractManager
  */
 abstract class AbstractManager
 {
+    /**
+     * @var string
+     */
+    protected $managerId;
+
     /**
      * @var string
      */
@@ -46,6 +54,11 @@ abstract class AbstractManager
      * @var EntityManager
      */
     protected $em = null;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
 
     /**
      * @var QueryBuilder
@@ -318,20 +331,36 @@ abstract class AbstractManager
      */
     public function create()
     {
-        return new $this->class;
+        $entity = new $this->class;
+
+        //fire event
+        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::EVENT_INITIALIZE), new ManagerEvent($entity));
+
+        return $entity;
     }
 
     /**
-     * @param object $data
-     * @param bool   $andFlush
+     * @param object $entity
+     * @param bool   $flush
+     * @param bool   $fireEvents
      *
      * @return $this
+     * @throws \Exception
      */
-    public function save($data, $andFlush = true)
+    public function save($entity, $flush = true, $fireEvents = true)
     {
-        $this->em->persist($data);
+        if (!($entity instanceof $this->class)) {
+            throw new \Exception(sprintf('Entity should be instance of %s', $this->class));
+        }
 
-        if ($andFlush) {
+        $exists = $this->em->getUnitOfWork()->isInIdentityMap($entity);
+
+        //fire event
+        $fireEvents && $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::EVENT_BEFORE_UPDATE : IgdrManagerEvents::EVENT_BEFORE_CREATE), new ManagerEvent($entity));
+
+        //persist and flush
+        $this->em->persist($entity);
+        if ($flush) {
             $this->em->flush();
         }
 
@@ -340,31 +369,37 @@ abstract class AbstractManager
             //@todo tags
             $this->cacheProvider->deleteAll();
         }
+
+        //fire event
+        $fireEvents && $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::EVENT_AFTER_UPDATE : IgdrManagerEvents::EVENT_AFTER_CREATE), new ManagerEvent($entity));
 
         return $this;
     }
 
     /**
-     * @param integer|object $data
-     * @param bool           $andFlush
+     * @param int|object $entity
+     * @param bool       $flush
      *
      * @return $this
      * @throws \Exception
      */
-    public function delete($data, $andFlush = true)
+    public function delete($entity, $flush = true)
     {
-        if (is_numeric($data)) {
-            $this->setId($data);
+        if (is_numeric($entity)) {
+            $this->setId($entity);
             $entity = $this->findOne();
-        } elseif (is_object($data)) {
-            $entity = $data;
-        } else {
-            throw new \Exception('Unknown format of input parameter');
         }
 
-        $this->em->remove($entity);
+        if (!($entity instanceof $this->class)) {
+            throw new \Exception(sprintf('Entity should be instance of %s', $this->class));
+        }
 
-        if ($andFlush) {
+        //fire event
+        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::EVENT_BEFORE_DELETE), new ManagerEvent($entity));
+
+        //remove
+        $this->em->remove($entity);
+        if ($flush) {
             $this->em->flush();
         }
 
@@ -373,6 +408,9 @@ abstract class AbstractManager
             //@todo tags
             $this->cacheProvider->deleteAll();
         }
+
+        //fire event
+        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::EVENT_AFTER_DELETE), new ManagerEvent($entity));
 
         return $this;
     }
@@ -425,5 +463,35 @@ abstract class AbstractManager
     private function getCachePrefix()
     {
         return strtolower(preg_replace('#[^\w]+#', '', $this->getRepositoryName()));
+    }
+
+    /**
+     * @param string $managerId
+     *
+     * @return $this
+     */
+    public function setManagerId($managerId)
+    {
+        $this->managerId = $managerId;
+
+        return $this;
+    }
+
+    /**
+     * @param string $eventName
+     *
+     * @return string
+     */
+    private function getEventName($eventName)
+    {
+        return sprintf('%s.%s', $this->managerId, $eventName);
+    }
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 }

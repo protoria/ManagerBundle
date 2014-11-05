@@ -3,7 +3,7 @@ services:
         abstract:  true
         calls:
             - [setEm, [@doctrine.orm.entity_manager]]
-#            - [setCacheProvider, [@doctrine_cache.providers.igdr_cache]]
+            - [setCacheProvider, [@doctrine_cache.providers.app_cache]]
 
     #factory
     igdr_manager.manager.factory:

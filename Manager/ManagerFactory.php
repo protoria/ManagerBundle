@@ -30,7 +30,7 @@ class ManagerFactory
     public function get($name)
     {
         if ($this->container->has($name)) {
-            return $this->container->get($name);
+            return $this->container->get($name)->setManagerId($name);
         } else {
             throw new \Exception(sprintf('Manager with name "%s" not found', $name));
         }
