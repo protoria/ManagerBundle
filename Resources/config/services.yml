@@ -26,3 +26,11 @@ services:
             - { name: form.type, alias: entity_manager }
         calls:
             - [setManagerFactory, [@igdr_manager.manager.factory]]
+
+    #listener
+    igdr_manager.listener.kernel:
+        class:    Igdr\Bundle\ManagerBundle\EventListener\KernelSubscriber
+        calls:
+              - [setEm, [@doctrine.orm.entity_manager]]
+        tags:
+            - { name: kernel.event_subscriber }
