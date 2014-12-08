@@ -347,7 +347,7 @@ abstract class AbstractManager
      * @return $this
      * @throws \Exception
      */
-    public function save($entity, $flush = false, $fireEvents = true)
+    public function save($entity, $flush = true, $fireEvents = true)
     {
         if (!($entity instanceof $this->class)) {
             throw new \Exception(sprintf('Entity should be instance of %s', $this->class));
