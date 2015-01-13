@@ -361,7 +361,7 @@ abstract class AbstractManager
         //persist and flush
         $this->em->persist($entity);
         if ($flush) {
-            $this->em->flush($entity);
+            $this->em->flush();
         }
 
         //clean cache
