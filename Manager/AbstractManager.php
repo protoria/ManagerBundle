@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Igdr\Bundle\ManagerBundle\Event\EntityEvent;
 use Igdr\Bundle\ManagerBundle\Event\ManagerEvent;
 use Igdr\Bundle\ManagerBundle\IgdrManagerEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -334,7 +335,8 @@ abstract class AbstractManager
         $entity = new $this->class;
 
         //fire event
-        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::EVENT_INITIALIZE), new ManagerEvent($entity));
+        $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_INITIALIZE, new ManagerEvent($this, $entity));
+        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_INITIALIZE), new EntityEvent($entity));
 
         return $entity;
     }
@@ -356,7 +358,10 @@ abstract class AbstractManager
         $exists = $this->em->getUnitOfWork()->isInIdentityMap($entity);
 
         //fire event
-        $fireEvents && $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::EVENT_BEFORE_UPDATE : IgdrManagerEvents::EVENT_BEFORE_CREATE), new ManagerEvent($entity));
+        if ($fireEvents) {
+            $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::SUFFIX_BEFORE_UPDATE : IgdrManagerEvents::SUFFIX_BEFORE_CREATE), new EntityEvent($entity));
+            $this->eventDispatcher->dispatch($exists ? IgdrManagerEvents::EVENT_BEFORE_UPDATE : IgdrManagerEvents::EVENT_BEFORE_CREATE, new ManagerEvent($this, $entity));
+        }
 
         //persist and flush
         $this->em->persist($entity);
@@ -371,7 +376,10 @@ abstract class AbstractManager
         }
 
         //fire event
-        $fireEvents && $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::EVENT_AFTER_UPDATE : IgdrManagerEvents::EVENT_AFTER_CREATE), new ManagerEvent($entity));
+        if ($fireEvents) {
+            $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::SUFFIX_AFTER_UPDATE : IgdrManagerEvents::SUFFIX_AFTER_CREATE), new EntityEvent($entity));
+            $this->eventDispatcher->dispatch($exists ? IgdrManagerEvents::EVENT_AFTER_UPDATE : IgdrManagerEvents::EVENT_AFTER_CREATE, new ManagerEvent($this, $entity));
+        }
 
         return $this;
     }
@@ -379,11 +387,12 @@ abstract class AbstractManager
     /**
      * @param int|object $entity
      * @param bool       $flush
+     * @param bool       $fireEvents
      *
      * @return $this
      * @throws \Exception
      */
-    public function delete($entity, $flush = true)
+    public function delete($entity, $flush = true, $fireEvents = true)
     {
         if (is_numeric($entity)) {
             $this->setId($entity);
@@ -395,7 +404,10 @@ abstract class AbstractManager
         }
 
         //fire event
-        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::EVENT_BEFORE_DELETE), new ManagerEvent($entity));
+        if ($fireEvents) {
+            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_BEFORE_DELETE, new ManagerEvent($this, $entity));
+            $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_BEFORE_DELETE), new EntityEvent($entity));
+        }
 
         //remove
         $this->em->remove($entity);
@@ -410,7 +422,10 @@ abstract class AbstractManager
         }
 
         //fire event
-        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::EVENT_AFTER_DELETE), new ManagerEvent($entity));
+        if ($fireEvents) {
+            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_AFTER_DELETE, new ManagerEvent($this, $entity));
+            $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_AFTER_DELETE), new EntityEvent($entity));
+        }
 
         return $this;
     }
@@ -475,6 +490,14 @@ abstract class AbstractManager
         $this->managerId = $managerId;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getManagerId()
+    {
+        return $this->managerId;
     }
 
     /**
