@@ -250,6 +250,9 @@ abstract class AbstractManager
         if ($this->cacheResults) {
             $query->useResultCache(true);
             $query->setResultCacheId($this->getCacheId($query));
+            if (is_numeric($this->cacheResults)) {
+                $query->setResultCacheLifetime($this->cacheResults);
+            }
         }
 
         return $query->getResult();
