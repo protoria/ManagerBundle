@@ -7,13 +7,6 @@ namespace Igdr\Bundle\ManagerBundle\Manager;
 interface ManagerInterface
 {
     /**
-     * @param array $columns
-     *
-     * @return $this
-     */
-    public function columns($columns = array());
-
-    /**
      * @param array $where
      *
      * @return $this
