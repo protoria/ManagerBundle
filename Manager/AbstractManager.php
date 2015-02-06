@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * Class AbstractManager
  */
-abstract class AbstractManager
+abstract class AbstractManager implements ManagerInterface
 {
     /**
      * @var string
