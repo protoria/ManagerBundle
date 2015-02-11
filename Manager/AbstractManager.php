@@ -234,7 +234,9 @@ abstract class AbstractManager implements ManagerInterface
                 $this->getQuery()->andWhere($value);
             } else {
                 $this->getQuery()->andWhere($name);
-                $this->getQuery()->setParameter(key($value), current($value));
+                if (!empty($value)) {
+                    $this->getQuery()->setParameter(key($value), current($value));
+                }
             }
         }
 
