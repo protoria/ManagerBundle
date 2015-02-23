@@ -2,11 +2,12 @@
 namespace Igdr\Bundle\ManagerBundle\Event;
 
 use Igdr\Bundle\ManagerBundle\Manager\AbstractManager;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class ManagerEvent
  */
-class ManagerEvent extends EntityEvent
+class ManagerEvent extends Event
 {
     /**
      * @var AbstractManager
@@ -15,13 +16,10 @@ class ManagerEvent extends EntityEvent
 
     /**
      * @param AbstractManager $manager
-     * @param object          $entity
      */
-    public function __construct(AbstractManager $manager, $entity)
+    public function __construct(AbstractManager $manager)
     {
         $this->manager = $manager;
-
-        parent::__construct($entity);
     }
 
     /**

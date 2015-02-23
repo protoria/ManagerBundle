@@ -248,6 +248,8 @@ abstract class AbstractManager implements ManagerInterface
      */
     protected function find()
     {
+        $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_BEFORE_FIND, new ManagerEvent($this));
+
         $query = $this->getQuery()->getQuery();
         if ($this->cacheResults) {
             $query->useResultCache(true);
@@ -340,8 +342,8 @@ abstract class AbstractManager implements ManagerInterface
         $entity = new $this->class;
 
         //fire event
-        $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_INITIALIZE, new ManagerEvent($this, $entity));
-        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_INITIALIZE), new EntityEvent($entity));
+        $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_INITIALIZE, new EntityEvent($this, $entity));
+        $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_INITIALIZE), new EntityEvent($this, $entity));
 
         return $entity;
     }
@@ -364,8 +366,8 @@ abstract class AbstractManager implements ManagerInterface
 
         //fire event
         if ($fireEvents) {
-            $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::SUFFIX_BEFORE_UPDATE : IgdrManagerEvents::SUFFIX_BEFORE_CREATE), new EntityEvent($entity));
-            $this->eventDispatcher->dispatch($exists ? IgdrManagerEvents::EVENT_BEFORE_UPDATE : IgdrManagerEvents::EVENT_BEFORE_CREATE, new ManagerEvent($this, $entity));
+            $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::SUFFIX_BEFORE_UPDATE : IgdrManagerEvents::SUFFIX_BEFORE_CREATE), new EntityEvent($this, $entity));
+            $this->eventDispatcher->dispatch($exists ? IgdrManagerEvents::EVENT_BEFORE_UPDATE : IgdrManagerEvents::EVENT_BEFORE_CREATE, new EntityEvent($this, $entity));
         }
 
         //persist and flush
@@ -382,8 +384,8 @@ abstract class AbstractManager implements ManagerInterface
 
         //fire event
         if ($fireEvents) {
-            $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::SUFFIX_AFTER_UPDATE : IgdrManagerEvents::SUFFIX_AFTER_CREATE), new EntityEvent($entity));
-            $this->eventDispatcher->dispatch($exists ? IgdrManagerEvents::EVENT_AFTER_UPDATE : IgdrManagerEvents::EVENT_AFTER_CREATE, new ManagerEvent($this, $entity));
+            $this->eventDispatcher->dispatch($this->getEventName($exists ? IgdrManagerEvents::SUFFIX_AFTER_UPDATE : IgdrManagerEvents::SUFFIX_AFTER_CREATE), new EntityEvent($this, $entity));
+            $this->eventDispatcher->dispatch($exists ? IgdrManagerEvents::EVENT_AFTER_UPDATE : IgdrManagerEvents::EVENT_AFTER_CREATE, new EntityEvent($this, $entity));
         }
 
         return $this;
@@ -410,8 +412,8 @@ abstract class AbstractManager implements ManagerInterface
 
         //fire event
         if ($fireEvents) {
-            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_BEFORE_DELETE, new ManagerEvent($this, $entity));
-            $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_BEFORE_DELETE), new EntityEvent($entity));
+            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_BEFORE_DELETE, new EntityEvent($this, $entity));
+            $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_BEFORE_DELETE), new EntityEvent($this, $entity));
         }
 
         //remove
@@ -428,8 +430,8 @@ abstract class AbstractManager implements ManagerInterface
 
         //fire event
         if ($fireEvents) {
-            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_AFTER_DELETE, new ManagerEvent($this, $entity));
-            $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_AFTER_DELETE), new EntityEvent($entity));
+            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_AFTER_DELETE, new EntityEvent($entity, $this));
+            $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_AFTER_DELETE), new EntityEvent($this, $entity));
         }
 
         return $this;
