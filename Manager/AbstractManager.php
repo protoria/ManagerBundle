@@ -93,6 +93,8 @@ abstract class AbstractManager implements ManagerInterface
     {
         if ($this->query === null) {
             $this->query = $this->getRepository()->createQueryBuilder('e');
+
+            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_INIT_QUERY, new ManagerEvent($this));
         }
 
         return $this->query;
@@ -248,8 +250,6 @@ abstract class AbstractManager implements ManagerInterface
      */
     protected function find()
     {
-        $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_BEFORE_FIND, new ManagerEvent($this));
-
         $query = $this->getQuery()->getQuery();
         if ($this->cacheResults) {
             $query->useResultCache(true);
