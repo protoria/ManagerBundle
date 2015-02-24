@@ -92,12 +92,20 @@ abstract class AbstractManager implements ManagerInterface
     public function getQuery()
     {
         if ($this->query === null) {
-            $this->query = $this->getRepository()->createQueryBuilder('e');
+            $this->query = $this->createQuery();
 
             $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_INIT_QUERY, new ManagerEvent($this));
         }
 
         return $this->query;
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public function createQuery()
+    {
+        return $this->getRepository()->createQueryBuilder('e');
     }
 
     /**
