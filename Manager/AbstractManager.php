@@ -438,7 +438,7 @@ abstract class AbstractManager implements ManagerInterface
 
         //fire event
         if ($fireEvents) {
-            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_AFTER_DELETE, new EntityEvent($entity, $this));
+            $this->eventDispatcher->dispatch(IgdrManagerEvents::EVENT_AFTER_DELETE, new EntityEvent($this, $entity));
             $this->eventDispatcher->dispatch($this->getEventName(IgdrManagerEvents::SUFFIX_AFTER_DELETE), new EntityEvent($this, $entity));
         }
 
