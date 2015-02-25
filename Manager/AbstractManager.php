@@ -414,6 +414,10 @@ abstract class AbstractManager implements ManagerInterface
             $entity = $this->findOne();
         }
 
+        if (empty($entity)) {
+            return $this;
+        }
+
         if (!($entity instanceof $this->class)) {
             throw new \Exception(sprintf('Entity should be instance of %s', $this->class));
         }
