@@ -25,7 +25,10 @@ class EntityManagerType extends AbstractType implements ManagerFactoryInterface
         if (is_object($options['manager'])) {
             $manager = $options['manager'];
         } else {
-            $manager = $this->managerFactory->get($options['manager'])->order()->where();
+            $manager = $this->managerFactory->get($options['manager'])->order();
+            if (!empty($options['where'])) {
+                $manager->where();
+            }
         }
 
         return $manager;
@@ -47,6 +50,7 @@ class EntityManagerType extends AbstractType implements ManagerFactoryInterface
         $resolver->setDefaults(array(
             'manager' => '',
             'class'   => $getClass,
+            'where'   => false,
             'choices' => $choiceList
         ));
     }
