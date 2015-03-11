@@ -258,6 +258,7 @@ abstract class AbstractManager implements ManagerInterface
      */
     protected function find()
     {
+        $this->getQuery()->distinct(true);
         $query = $this->getQuery()->getQuery();
         if ($this->cacheResults) {
             $query->useResultCache(true);
