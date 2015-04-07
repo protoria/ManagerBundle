@@ -521,6 +521,38 @@ abstract class AbstractManager implements ManagerInterface
     }
 
     /**
+     * Apply criteries to manager
+     *
+     * @param array $criteries
+     *
+     * @return $this
+     */
+    public function setCriteries(array $criteries)
+    {
+        foreach ($criteries as $key => $criteria) {
+            $method = $this->normalizeMethod($key);
+            if (method_exists($this, $method)) {
+                call_user_func(array($this, $method), $criteria);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $key name param
+     *
+     * @return string
+     */
+    private function normalizeMethod($key)
+    {
+        $option = str_replace('_', ' ', strtolower($key));
+        $option = str_replace(' ', '', ucwords($option));
+
+        return $option;
+    }
+
+    /**
      * @param string $eventName
      *
      * @return string

@@ -40,7 +40,7 @@ class EntityManagerType extends AbstractType implements ManagerFactoryInterface
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $choiceList = function (Options $options) {
-            return $this->getManager($options)->findAll();
+            return $this->getManager($options)->setCriteries($options['criteries'])->order()->findAll();
         };
 
         $getClass = function (Options $options) {
@@ -48,10 +48,11 @@ class EntityManagerType extends AbstractType implements ManagerFactoryInterface
         };
 
         $resolver->setDefaults(array(
-            'manager' => '',
-            'class'   => $getClass,
-            'where'   => false,
-            'choices' => $choiceList
+            'manager'   => '',
+            'class'     => $getClass,
+            'where'     => false,
+            'criteries' => array(),
+            'choices'   => $choiceList
         ));
     }
 
