@@ -530,7 +530,7 @@ abstract class AbstractManager implements ManagerInterface
     public function setCriteries(array $criteries)
     {
         foreach ($criteries as $key => $criteria) {
-            $method = $this->normalizeMethod($key);
+            $method = 'set'.$this->normalizeMethod($key);
             if (method_exists($this, $method)) {
                 call_user_func(array($this, $method), $criteria);
             }
