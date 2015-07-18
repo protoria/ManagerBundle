@@ -185,11 +185,26 @@ abstract class AbstractManager implements ManagerInterface
     /**
      * Get records from database
      *
+     * @param string|null $assoc
+     *
      * @return array The objects.
      */
-    public function findAll()
+    public function findAll($assoc = null)
     {
-        return $this->find();
+        if (false === $assoc) {
+            return $this->find();
+        } else {
+            $result = array();
+            $collection = $this->find();
+            $method = 'get'.$this->normalizeMethod($assoc);
+            foreach ($collection as $item) {
+                if (method_exists($item, $method)) {
+                    $result[$item->$method()] = $item;
+                }
+            }
+
+            return $result;
+        }
     }
 
     /**
