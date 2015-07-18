@@ -191,11 +191,12 @@ abstract class AbstractManager implements ManagerInterface
      */
     public function findAll($assoc = null)
     {
-        if (false === $assoc) {
+        if (null === $assoc) {
             return $this->find();
         } else {
-            $result = array();
             $collection = $this->find();
+
+            $result = array();
             $method = 'get'.$this->normalizeMethod($assoc);
             foreach ($collection as $item) {
                 if (method_exists($item, $method)) {
