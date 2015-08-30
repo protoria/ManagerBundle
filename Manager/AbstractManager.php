@@ -81,7 +81,7 @@ abstract class AbstractManager implements ManagerInterface
      */
     public function resetQuery()
     {
-        $this->query = $this->getRepository()->createQueryBuilder('e');
+        $this->query = $this->createQuery();
 
         return $this;
     }
