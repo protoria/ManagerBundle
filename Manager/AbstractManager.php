@@ -276,12 +276,19 @@ abstract class AbstractManager implements ManagerInterface
     {
         $this->getQuery()->distinct(true);
         $query = $this->getQuery()->getQuery();
+
         if ($this->cacheResults) {
             $query->useResultCache(true);
             $query->setResultCacheId($this->getCacheId($query));
             if (is_numeric($this->cacheResults)) {
                 $query->setResultCacheLifetime($this->cacheResults);
             }
+        }
+
+        //gedmo translateble
+        $walker = 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker';
+        if (class_exists($walker)) {
+            $query->setHint(\Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER, $walker);
         }
 
         return $query->getResult();
