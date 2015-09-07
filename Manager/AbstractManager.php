@@ -525,12 +525,12 @@ abstract class AbstractManager implements ManagerInterface
      */
     private function getCacheId($query)
     {
-        $cacheId = $this->getCachePrefix().md5($query->getSQL());
+        $cacheId = $query->getSQL();
         if ($this->translatableListener) {
             $cacheId = $cacheId.'_'.$this->translatableListener->getListenerLocale();
         }
 
-        return $cacheId;
+        return md5($cacheId);
     }
 
     /**
@@ -539,14 +539,6 @@ abstract class AbstractManager implements ManagerInterface
     private function getCacheTag()
     {
         return $this->managerId;
-    }
-
-    /**
-     * @return string
-     */
-    private function getCachePrefix()
-    {
-        return strtolower(preg_replace('#[^\w]+#', '', $this->getRepositoryName()));
     }
 
     /**
