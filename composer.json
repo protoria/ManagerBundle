@@ -2,7 +2,6 @@
     "name": "igdr/manager-bundle",
     "type": "symfony-bundle",
     "description": "Manager Bundle",
-    "keywords": ["Igdr", "Manager"],
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": ">=2.4",
