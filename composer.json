@@ -8,7 +8,6 @@
         "symfony/symfony": ">=2.4",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
-        "doctrine/doctrine-cache-bundle": "1.*",
         "igdr/cache-bundle": "dev-master"
     },
     "suggest": {
