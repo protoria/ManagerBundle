@@ -6,6 +6,7 @@ services:
             - [setEventDispatcher, [@event_dispatcher]]
             - [setCacheProvider, [@doctrine_cache.providers.app_cache]]
             - [setTranslatableListener, [@?gedmo.listener.translatable]]
+            - [setTagsManager, [@igdr_cache.manager.tags]]
 
     #factory
     igdr_manager.manager.factory:

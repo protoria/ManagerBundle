@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Gedmo\Translatable\TranslatableListener;
-use Igdr\Bundle\CacheBundle\Manager\TagManager;
+use Igdr\Bundle\CacheBundle\Manager\TagsManager;
 use Igdr\Bundle\ManagerBundle\Event\EntityEvent;
 use Igdr\Bundle\ManagerBundle\Event\ManagerEvent;
 use Igdr\Bundle\ManagerBundle\IgdrManagerEvents;
@@ -84,9 +84,9 @@ abstract class AbstractManager implements ManagerInterface
     protected $cacheProvider;
 
     /**
-     * @var TagManager
+     * @var TagsManager
      */
-    protected $tagManager;
+    protected $tagsManager;
 
     /**
      * @return $this
@@ -297,7 +297,7 @@ abstract class AbstractManager implements ManagerInterface
                 $query->setResultCacheLifetime($this->cacheResults);
             }
             //add cache id to tags
-            $this->tagManager->addKey($this->getCacheTag(), $cacheId);
+            $this->tagsManager->addKey($this->getCacheTag(), $cacheId);
         }
 
         //gedmo translateble
@@ -425,7 +425,7 @@ abstract class AbstractManager implements ManagerInterface
 
         //clean cache
         if ($this->cacheResults) {
-            $this->tagManager->cleanCacheByTag($this->getCacheTag());
+            $this->tagsManager->cleanCacheByTag($this->getCacheTag());
         }
 
         //fire event
@@ -474,7 +474,7 @@ abstract class AbstractManager implements ManagerInterface
 
         //clean cache
         if ($this->cacheResults) {
-            $this->tagManager->cleanCacheByTag($this->getCacheTag());
+            $this->tagsManager->cleanCacheByTag($this->getCacheTag());
         }
 
         //fire event
@@ -620,12 +620,12 @@ abstract class AbstractManager implements ManagerInterface
     }
 
     /**
-     * @param TagManager $tagManager
+     * @param TagsManager $tagsManager
      *
      * @return $this
      */
-    public function setTagManager($tagManager)
+    public function setTagsManager($tagsManager)
     {
-        $this->tagManager = $tagManager;
+        $this->tagsManager = $tagsManager;
     }
 }
