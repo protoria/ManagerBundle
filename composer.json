@@ -5,8 +5,8 @@
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": ">=2.4",
-        "doctrine/orm": "dev-master",
-        "doctrine/doctrine-bundle": "dev-master",
+        "doctrine/orm": "2.5.*",
+        "doctrine/doctrine-bundle": "~1.2",
         "doctrine/doctrine-cache-bundle": "dev-master",
         "igdr/cache-bundle": "dev-master"
     },
