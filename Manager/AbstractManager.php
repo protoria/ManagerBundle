@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Gedmo\Translatable\TranslatableListener;
+use Igdr\Bundle\CacheBundle\Manager\TagManager;
 use Igdr\Bundle\ManagerBundle\Event\EntityEvent;
 use Igdr\Bundle\ManagerBundle\Event\ManagerEvent;
 use Igdr\Bundle\ManagerBundle\IgdrManagerEvents;
@@ -81,6 +82,11 @@ abstract class AbstractManager implements ManagerInterface
      * @var CacheProvider
      */
     protected $cacheProvider;
+
+    /**
+     * @var TagManager
+     */
+    protected $tagManager;
 
     /**
      * @return $this
@@ -284,11 +290,14 @@ abstract class AbstractManager implements ManagerInterface
         $query = $this->getQuery()->getQuery();
 
         if ($this->cacheResults) {
+            $cacheId = $this->getCacheId($query);
             $query->useResultCache(true);
-            $query->setResultCacheId($this->getCacheId($query));
+            $query->setResultCacheId($cacheId);
             if (is_numeric($this->cacheResults)) {
                 $query->setResultCacheLifetime($this->cacheResults);
             }
+            //add cache id to tags
+            $this->tagManager->addKey($this->getCacheTag(), $cacheId);
         }
 
         //gedmo translateble
@@ -416,8 +425,7 @@ abstract class AbstractManager implements ManagerInterface
 
         //clean cache
         if ($this->cacheResults) {
-            //@todo tags
-            $this->cacheProvider->deleteAll();
+            $this->tagManager->cleanCacheByTag($this->getCacheTag());
         }
 
         //fire event
@@ -466,8 +474,7 @@ abstract class AbstractManager implements ManagerInterface
 
         //clean cache
         if ($this->cacheResults) {
-            //@todo tags
-            $this->cacheProvider->deleteAll();
+            $this->tagManager->cleanCacheByTag($this->getCacheTag());
         }
 
         //fire event
@@ -522,10 +529,16 @@ abstract class AbstractManager implements ManagerInterface
         if ($this->translatableListener) {
             $cacheId = $cacheId.'_'.$this->translatableListener->getListenerLocale();
         }
-        var_dump($cacheId);
-
 
         return $cacheId;
+    }
+
+    /**
+     * @return string
+     */
+    private function getCacheTag()
+    {
+        return $this->managerId;
     }
 
     /**
@@ -612,5 +625,15 @@ abstract class AbstractManager implements ManagerInterface
     public function setTranslatableListener($translatableListener)
     {
         $this->translatableListener = $translatableListener;
+    }
+
+    /**
+     * @param TagManager $tagManager
+     *
+     * @return $this
+     */
+    public function setTagManager($tagManager)
+    {
+        $this->tagManager = $tagManager;
     }
 }

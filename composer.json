@@ -2,13 +2,16 @@
     "name": "igdr/manager-bundle",
     "type": "symfony-bundle",
     "description": "Manager Bundle",
+    "keywords": [
+        "Igdr",
+        "Manager"
+    ],
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": ">=2.4",
-        "doctrine/orm": "2.5.*",
+        "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
-        "doctrine/doctrine-cache-bundle": "dev-master",
-        "igdr/cache-bundle": "dev-master"
+        "doctrine/doctrine-cache-bundle": "dev-master"
     },
     "suggest": {
         "gedmo/doctrine-extensions": "dev-master"
