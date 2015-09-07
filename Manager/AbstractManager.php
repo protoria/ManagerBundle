@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Gedmo\Translatable\TranslatableListener;
 use Igdr\Bundle\ManagerBundle\Event\EntityEvent;
 use Igdr\Bundle\ManagerBundle\Event\ManagerEvent;
 use Igdr\Bundle\ManagerBundle\IgdrManagerEvents;
@@ -60,6 +61,11 @@ abstract class AbstractManager implements ManagerInterface
      * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
+
+    /**
+     * @var TranslatableListener
+     */
+    protected $translatableListener;
 
     /**
      * @var QueryBuilder
@@ -240,8 +246,8 @@ abstract class AbstractManager implements ManagerInterface
     public function order($order = array())
     {
         empty($order) && $order = $this->order;
-        foreach ((array) $order as $name => $dir) {
-            $this->getQuery()->addOrderBy('e.' . $name, $dir);
+        foreach ((array)$order as $name => $dir) {
+            $this->getQuery()->addOrderBy('e.'.$name, $dir);
         }
 
         return $this;
@@ -255,7 +261,7 @@ abstract class AbstractManager implements ManagerInterface
     public function where($where = array())
     {
         empty($where) && $where = $this->where;
-        foreach ((array) $where as $name => $value) {
+        foreach ((array)$where as $name => $value) {
             if (is_numeric($name)) {
                 $this->getQuery()->andWhere($value);
             } else {
@@ -286,9 +292,9 @@ abstract class AbstractManager implements ManagerInterface
         }
 
         //gedmo translateble
-        $walker = 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker';
-        if (class_exists($walker)) {
-            $query->setHint(\Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER, $walker);
+        if ($this->translatableListener !== null) {
+            $query->setHint(\Gedmo\Translatable\TranslatableListener::HINT_TRANSLATABLE_LOCALE, $this->translatableListener->getListenerLocale());
+            $query->setHint(\Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER, 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker');
         }
 
         return $query->getResult();
@@ -302,7 +308,7 @@ abstract class AbstractManager implements ManagerInterface
     public function count($field = null)
     {
         $query = clone $this->getQuery();
-        $query = $query->select($field ? 'count(DISTINCT e.' . $field . ')' : 'count(DISTINCT e)')->getQuery();
+        $query = $query->select($field ? 'count(DISTINCT e.'.$field.')' : 'count(DISTINCT e)')->getQuery();
         /* @var $query Query */
         $count = $query->getSingleScalarResult();
 
@@ -323,13 +329,13 @@ abstract class AbstractManager implements ManagerInterface
 
         /* @var $query Query */
         if (strpos($field, '.') === false) {
-            $query = $query->select('DISTINCT e.' . $field)->getQuery();
+            $query = $query->select('DISTINCT e.'.$field)->getQuery();
         } else {
             $query = $query->select($field)->getQuery();
         }
 
         $queryResult = $query->getScalarResult();
-        $result      = array();
+        $result = array();
         foreach ($queryResult as $row) {
             $result[] = array_shift($row);
         }
@@ -359,7 +365,7 @@ abstract class AbstractManager implements ManagerInterface
     public function setId($id)
     {
         empty($id) && $id = 0;
-        $this->where(array('e.' . $this->getIdField() . ' IN (:id)' => array('id' => $id)));
+        $this->where(array('e.'.$this->getIdField().' IN (:id)' => array('id' => $id)));
 
         return $this;
     }
@@ -512,7 +518,14 @@ abstract class AbstractManager implements ManagerInterface
      */
     private function getCacheId($query)
     {
-        return $this->getCachePrefix() . md5($query->getSQL());
+        $cacheId = $this->getCachePrefix().md5($query->getSQL());
+        if ($this->translatableListener) {
+            $cacheId = $cacheId.'_'.$this->translatableListener->getListenerLocale();
+        }
+        var_dump($cacheId);
+
+
+        return $cacheId;
     }
 
     /**
@@ -591,5 +604,13 @@ abstract class AbstractManager implements ManagerInterface
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * @param TranslatableListener $translatableListener
+     */
+    public function setTranslatableListener($translatableListener)
+    {
+        $this->translatableListener = $translatableListener;
     }
 }
