@@ -4,7 +4,6 @@ services:
         calls:
             - [setEm, [@doctrine.orm.entity_manager]]
             - [setEventDispatcher, [@event_dispatcher]]
-            - [setCacheProvider, [@doctrine_cache.providers.app_cache]]
             - [setTranslatableListener, [@?gedmo.listener.translatable]]
             - [setTagsManager, [@igdr_cache.manager.tags]]
 
@@ -19,7 +18,6 @@ services:
         class:     Igdr\Bundle\ManagerBundle\Manager\StandardManager
         abstract:  true
         parent:    igdr_manager.manager.abstract
-
 
     #form
     igdr_manager.form.entity_manager:

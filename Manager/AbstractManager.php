@@ -1,7 +1,6 @@
 <?php
 namespace Igdr\Bundle\ManagerBundle\Manager;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
@@ -77,11 +76,6 @@ abstract class AbstractManager implements ManagerInterface
      * @var boolean
      */
     protected $cacheResults;
-
-    /**
-     * @var CacheProvider
-     */
-    protected $cacheProvider;
 
     /**
      * @var TagsManager
@@ -425,7 +419,7 @@ abstract class AbstractManager implements ManagerInterface
 
         //clean cache
         if ($this->cacheResults) {
-            $this->tagsManager->cleanCacheByTag($this->getCacheTag());
+            $this->tagsManager->cleanCacheByTags([$this->getCacheTag()]);
         }
 
         //fire event
@@ -474,7 +468,7 @@ abstract class AbstractManager implements ManagerInterface
 
         //clean cache
         if ($this->cacheResults) {
-            $this->tagsManager->cleanCacheByTag($this->getCacheTag());
+            $this->tagsManager->cleanCacheByTags([$this->getCacheTag()]);
         }
 
         //fire event
@@ -494,18 +488,6 @@ abstract class AbstractManager implements ManagerInterface
     public function setCacheResults($cache)
     {
         $this->cacheResults = $cache;
-
-        return $this;
-    }
-
-    /**
-     * @param CacheProvider $cacheProvider
-     *
-     * @return $this
-     */
-    public function setCacheProvider(CacheProvider $cacheProvider)
-    {
-        $this->cacheProvider = $cacheProvider;
 
         return $this;
     }
