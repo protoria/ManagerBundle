@@ -610,4 +610,12 @@ abstract class AbstractManager implements ManagerInterface
     {
         $this->tagsManager = $tagsManager;
     }
+
+    /**
+     * @return string
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
 }
