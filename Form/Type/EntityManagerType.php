@@ -4,8 +4,10 @@ namespace Igdr\Bundle\ManagerBundle\Form\Type;
 use Igdr\Bundle\ManagerBundle\Manager\AbstractManager;
 use Igdr\Bundle\ManagerBundle\Model\ManagerFactoryInterface;
 use Igdr\Bundle\ManagerBundle\Model\ManagerFactoryTrait;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
@@ -37,7 +39,7 @@ class EntityManagerType extends AbstractType implements ManagerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $choiceList = function (Options $options) {
             return $this->getManager($options)->setCriteries($options['criteries'])->order()->findAll();
@@ -52,7 +54,7 @@ class EntityManagerType extends AbstractType implements ManagerFactoryInterface
             'class'     => $getClass,
             'where'     => false,
             'criteries' => array(),
-            'choices'   => $choiceList
+            'choices'   => $choiceList,
         ));
     }
 
@@ -61,14 +63,6 @@ class EntityManagerType extends AbstractType implements ManagerFactoryInterface
      */
     public function getParent()
     {
-        return 'entity';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'entity_manager';
+        return EntityType::class;
     }
 }

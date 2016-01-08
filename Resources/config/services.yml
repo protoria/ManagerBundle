@@ -2,16 +2,16 @@ services:
     igdr_manager.manager.abstract:
         abstract:  true
         calls:
-            - [setEm, [@doctrine.orm.entity_manager]]
-            - [setEventDispatcher, [@event_dispatcher]]
-            - [setTranslatableListener, [@?gedmo.listener.translatable]]
-            - [setTagsManager, [@igdr_cache.manager.tags]]
+            - [setEm, ["@doctrine.orm.entity_manager"]]
+            - [setEventDispatcher, ["@event_dispatcher"]]
+            - [setTranslatableListener, ["@?gedmo.listener.translatable"]]
+            - [setTagsManager, ["@igdr_cache.manager.tags"]]
 
     #factory
     igdr_manager.manager.factory:
         class:  Igdr\Bundle\ManagerBundle\Manager\ManagerFactory
         calls:
-            - [setContainer, [@service_container]]
+            - [setContainer, ["@service_container"]]
 
     #standard manager
     igdr_manager.manager.standard:
@@ -23,6 +23,6 @@ services:
     igdr_manager.form.entity_manager:
         class:     Igdr\Bundle\ManagerBundle\Form\Type\EntityManagerType
         tags:
-            - { name: form.type, alias: entity_manager }
+            - { name: form.type }
         calls:
-            - [setManagerFactory, [@igdr_manager.manager.factory]]
+            - [setManagerFactory, ["@igdr_manager.manager.factory"]]
