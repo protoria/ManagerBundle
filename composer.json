@@ -1,9 +1,9 @@
 {
-    "name": "igdr/manager-bundle",
+    "name": "protoria/manager-bundle",
     "type": "symfony-bundle",
     "description": "Manager Bundle",
     "keywords": [
-        "Igdr",
+        "Protoria",
         "Manager"
     ],
     "require": {
